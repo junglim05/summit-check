@@ -9,7 +9,10 @@ export const maxDuration = 30;
 
 interface ConfirmBody {
   path: string;
-  mountainId: number;
+  /** exif 인증에서는 생략 가능 — 서버가 EXIF 좌표로 가장 가까운 산을 고른다. */
+  mountainId?: number;
+  /** 표시 전용 JPEG 사본 경로 (검증에는 쓰지 않음) */
+  displayPath?: string;
   method: "live" | "exif";
   /** live 인증 시 클라이언트 GPS */
   lat?: number;
@@ -44,14 +47,22 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "잘못된 파일 경로" }, { status: 400 });
   }
 
+  // 표시 사본은 사용자 폴더 안, 원본 경로 기반이어야 한다 (임의 경로 삭제 방지)
+  const displayPath = body.displayPath === `${body.path}.jpg` ? body.displayPath : undefined;
+
   const fail = async (msg: string, status = 422) => {
-    await admin.storage.from("summit-photos").remove([body.path]);
+    await admin.storage.from("summit-photos").remove(displayPath ? [body.path, displayPath] : [body.path]);
     return NextResponse.json({ error: msg }, { status });
   };
 
-  const { data: m } = await admin.from("mountains").select("*").eq("id", body.mountainId).single();
-  if (!m) return fail("존재하지 않는 산입니다.", 404);
-  const mountain = m as Mountain;
+  let mountain: Mountain | null = null;
+  if (body.mountainId) {
+    const { data: m } = await admin.from("mountains").select("*").eq("id", body.mountainId).single();
+    if (!m) return fail("존재하지 않는 산입니다.", 404);
+    mountain = m as Mountain;
+  } else if (body.method === "live") {
+    return fail("산이 지정되지 않았습니다.");
+  }
 
   let lat: number, lng: number, takenAt: string | null = null;
 
@@ -84,8 +95,26 @@ export async function POST(req: Request) {
     lat = gps.latitude;
     lng = gps.longitude;
     const dt = (exif?.DateTimeOriginal ?? exif?.CreateDate) as Date | string | undefined;
-    if (dt) takenAt = new Date(dt).toISOString();
+    if (dt) {
+      const d = new Date(dt);
+      if (!Number.isNaN(d.getTime())) takenAt = d.toISOString();
+    }
+
+    // 클라이언트가 산을 특정하지 못한 경우(HEIC 등 브라우저 파싱 실패) 서버가 고른다.
+    if (!mountain) {
+      const { data: all } = await admin.from("mountains").select("*");
+      let best: { m: Mountain; d: number } | null = null;
+      for (const cand of (all ?? []) as Mountain[]) {
+        const d = distanceM(lat, lng, cand.lat, cand.lng);
+        if (!Number.isFinite(d)) continue;
+        if (!best || d < best.d) best = { m: cand, d };
+      }
+      if (!best) return fail("등록된 산이 없습니다.", 500);
+      mountain = best.m;
+    }
   }
+
+  if (!mountain) return fail("산을 특정하지 못했습니다.");
 
   const dist = distanceM(lat, lng, mountain.lat, mountain.lng);
   const allowed = body.method === "live"
@@ -120,7 +149,7 @@ export async function POST(req: Request) {
   if (upsertErr) return fail("인증 저장 실패: " + upsertErr.message, 500);
 
   if (prev?.photo_path && prev.photo_path !== body.path) {
-    await admin.storage.from("summit-photos").remove([prev.photo_path]);
+    await admin.storage.from("summit-photos").remove([prev.photo_path, `${prev.photo_path}.jpg`]);
   }
 
   return NextResponse.json({

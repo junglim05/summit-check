@@ -8,3 +8,8 @@ out
 next-env.d.ts
 .DS_Store
 .vercel
+
+# 테스트용 개인 사진 (위치정보 포함) 은 커밋하지 않는다
+/IMG_*.heic
+/IMG_*.HEIC
+/IMG_*.jpg

@@ -1,11 +1,10 @@
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { photoUrl } from "@/lib/storage";
 import type { Mountain, Summit } from "@/lib/types";
 import StoneIcon from "@/components/StoneIcon";
 import { IconCamera } from "@/components/icons";
+import SummitPhoto from "@/components/SummitPhoto";
 
 export default async function MountainPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -43,7 +42,7 @@ export default async function MountainPage({ params }: { params: Promise<{ slug:
         <div className="grid grid-cols-3 gap-2">
           {(recent as unknown as (Summit & { profiles: { nickname: string } })[]).map((s) => (
             <figure key={s.id} className="relative aspect-square rounded-xl overflow-hidden card">
-              <Image src={photoUrl(s.photo_path)} alt="" fill sizes="33vw" className="object-cover" />
+              <SummitPhoto path={s.photo_path} alt={`${mountain.name} 정상석`} sizes="33vw" />
               <figcaption className="absolute bottom-0 inset-x-0 text-[11px] px-2 py-1 bg-black/50 text-white truncate">
                 {s.profiles?.nickname}
               </figcaption>

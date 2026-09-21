@@ -1,11 +1,10 @@
 import Link from "next/link";
-import Image from "next/image";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { photoUrl } from "@/lib/storage";
 import type { Mountain, Profile, RankingRow, Summit } from "@/lib/types";
 import StoneIcon from "@/components/StoneIcon";
 import DeleteSummitButton from "@/components/DeleteSummitButton";
+import SummitPhoto from "@/components/SummitPhoto";
 import { IconUser, Logo } from "@/components/icons";
 
 export default async function MePage() {
@@ -64,7 +63,7 @@ export default async function MePage() {
           {list.map((s) => (
             <figure key={s.id} className="card overflow-hidden">
               <div className="relative aspect-square">
-                <Image src={photoUrl(s.photo_path)} alt={`${s.mountains?.name} 정상석`} fill sizes="50vw" className="object-cover" />
+                <SummitPhoto path={s.photo_path} alt={`${s.mountains?.name} 정상석`} sizes="50vw" />
                 <span className="absolute top-2 left-2 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-black/60 text-white">
                   {s.method === "live" ? "현장 인증" : "사진 인증"}
                 </span>
