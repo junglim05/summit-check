@@ -1,6 +1,8 @@
-# 정상석 인증 (summit-check)
+# 하이피크 (Highpeak)
 
 서울·경기 28개 산의 정상석을 GPS 기반으로 인증하고 컬렉션·랭킹을 쌓는 모바일 웹앱.
+
+무채색 단색 UI, 산 모양 로고 마크를 쓴다.
 
 - 프론트/백엔드: Next.js 15 (App Router, Route Handlers)
 - 인증·DB·스토리지: Supabase (Auth, Postgres + RLS, Storage)
@@ -38,6 +40,7 @@ src/app
   login, signup, auth/callback
   api/verify/prepare       Storage 서명 업로드 URL 발급
   api/verify/confirm       GPS·EXIF 서버 검증 후 인증 저장
+src/components             Nav/TabBar(하단 탭), icons.tsx(로고·단색 아이콘 세트)
 src/components/verify      LiveCapture(카메라+오버레이), ExifUpload, StoneOverlay
 src/lib                    supabase 클라이언트, geo, fitScore(실루엣 정합), upload
 supabase/migrations        스키마 + 시드

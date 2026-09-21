@@ -6,6 +6,7 @@ import { distanceM, formatDistance } from "@/lib/geo";
 import { computeFitScore } from "@/lib/fitScore";
 import { uploadAndVerify, type VerifyResult } from "@/lib/upload";
 import StoneOverlay, { OVERLAY_BOX } from "./StoneOverlay";
+import { IconCamera, IconCheck, IconPin } from "@/components/icons";
 
 type Geo = { lat: number; lng: number; accuracy: number };
 
@@ -185,7 +186,7 @@ export default function LiveCapture({
         <p className="text-center text-xs muted mb-4">
           정상에서 {formatDistance(nearest?.d ?? 0)} · GPS ±{Math.round(geo?.accuracy ?? 0)}m · 정합 {Math.round(shot.fit * 100)}%
         </p>
-        {err && <p className="text-sm text-red-600 text-center mb-3">{err}</p>}
+        {err && <p className="text-sm font-medium text-center mb-3">{err}</p>}
         <div className="grid grid-cols-2 gap-2">
           <button className="btn btn-ghost" onClick={retake} disabled={busy}>다시 찍기</button>
           <button className="btn btn-primary" onClick={submit} disabled={busy}>{busy ? "인증 중…" : "인증 완료"}</button>
@@ -216,8 +217,8 @@ export default function LiveCapture({
             className="w-18 h-18 rounded-full border-4 transition"
             style={{
               width: 72, height: 72,
-              borderColor: fitReady ? "var(--forest)" : "var(--line)",
-              background: fitReady ? "var(--forest)" : "var(--card)",
+              borderColor: fitReady ? "var(--ink)" : "var(--line)",
+              background: fitReady ? "var(--ink)" : "var(--card)",
               opacity: fitReady ? 1 : 0.6,
             }}
           />
@@ -231,13 +232,13 @@ export default function LiveCapture({
       <div className="card p-4">
         <p className="text-xs muted mb-1">현재 위치</p>
         {geoErr ? (
-          <p className="text-sm text-red-600">{geoErr}</p>
+          <p className="text-sm font-medium">{geoErr}</p>
         ) : !geo ? (
-          <p className="text-sm muted">GPS 수신 중… 📡</p>
+          <p className="text-sm muted">GPS 수신 중…</p>
         ) : nearest ? (
           <>
-            <p className="font-bold text-lg">
-              {nearest.inRange ? "✅ " : "📍 "}
+            <p className="font-bold text-lg flex items-center gap-1.5">
+              {nearest.inRange ? <IconCheck size={18} strokeWidth={2.1} /> : <IconPin size={18} className="muted" />}
               {nearest.m.name}
             </p>
             <p className="text-sm muted">
@@ -252,10 +253,16 @@ export default function LiveCapture({
         <p className="text-xs muted px-1">GPS 정확도가 낮아요. 하늘이 잘 보이는 곳에서 잠시 기다리면 개선됩니다.</p>
       )}
 
-      {camErr && <p className="text-sm text-red-600 px-1">{camErr}</p>}
+      {camErr && <p className="text-sm font-medium px-1">{camErr}</p>}
 
       <button className="btn btn-primary" disabled={!nearest?.inRange} onClick={openCamera}>
-        {nearest?.inRange ? "📸 정상석 촬영하기" : "정상 반경 안에서만 촬영할 수 있어요"}
+        {nearest?.inRange ? (
+          <>
+            <IconCamera size={18} /> 정상석 촬영하기
+          </>
+        ) : (
+          "정상 반경 안에서만 촬영할 수 있어요"
+        )}
       </button>
 
       <p className="text-xs muted text-center">

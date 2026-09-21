@@ -5,6 +5,7 @@ import exifr from "exifr";
 import type { Mountain } from "@/lib/types";
 import { distanceM, formatDistance } from "@/lib/geo";
 import { uploadAndVerify, type VerifyResult } from "@/lib/upload";
+import { IconAlert, IconCheck, IconImage } from "@/components/icons";
 
 interface Parsed {
   file: File;
@@ -80,11 +81,11 @@ export default function ExifUpload({ mountains, onDone }: { mountains: Mountain[
       </div>
 
       <label className="btn btn-primary cursor-pointer">
-        🖼️ 사진 선택
+        <IconImage size={18} /> 사진 선택
         <input type="file" accept="image/*" className="hidden" onChange={onPick} />
       </label>
 
-      {err && <p className="text-sm text-red-600 px-1">{err}</p>}
+      {err && <p className="text-sm font-medium px-1">{err}</p>}
 
       {parsed && (
         <div className="card overflow-hidden">
@@ -95,8 +96,8 @@ export default function ExifUpload({ mountains, onDone }: { mountains: Mountain[
           <div className="p-4">
             {parsed.match ? (
               <>
-                <p className="font-bold text-lg">
-                  {parsed.match.ok ? "✅ " : "❌ "}
+                <p className="font-bold text-lg flex items-center gap-1.5">
+                  {parsed.match.ok ? <IconCheck size={18} strokeWidth={2.1} /> : <IconAlert size={18} className="muted" />}
                   {parsed.match.m.name}
                 </p>
                 <p className="text-sm muted">

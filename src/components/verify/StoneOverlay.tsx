@@ -8,7 +8,8 @@ export const OVERLAY_BOX = { x: 0.2, y: 0.18, w: 0.6, h: 0.6 };
 
 export default function StoneOverlay({ shape, fit }: { shape: StoneShape; fit: number }) {
   const good = fit >= 0.3;
-  const color = good ? "#7CFF9B" : "rgba(255,255,255,.85)";
+  // 단색 유지: 정합 여부는 색이 아니라 선의 굵기·실선 여부로 표현한다.
+  const color = good ? "#ffffff" : "rgba(255,255,255,.7)";
   return (
     <svg
       className="absolute inset-0 w-full h-full pointer-events-none"
@@ -32,7 +33,7 @@ export default function StoneOverlay({ shape, fit }: { shape: StoneShape; fit: n
           d={STONE_PATHS[shape] ?? STONE_PATHS.rect}
           fill="none"
           stroke={color}
-          strokeWidth={good ? 2.2 : 1.6}
+          strokeWidth={good ? 2.6 : 1.4}
           strokeDasharray={good ? undefined : "4 3"}
           fillRule="evenodd"
           vectorEffect="non-scaling-stroke"

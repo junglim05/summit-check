@@ -19,7 +19,7 @@ export default function DeleteSummitButton({ id }: { id: string }) {
   return (
     <div className="flex gap-2 mt-1 text-[11px]">
       <button
-        className="text-red-600 font-semibold"
+        className="font-semibold underline underline-offset-2"
         disabled={busy}
         onClick={async () => {
           setBusy(true);

@@ -25,9 +25,9 @@ export default function StoneIcon({
     <svg width={size} height={size} viewBox="0 0 100 100" aria-hidden>
       <path
         d={STONE_PATHS[shape] ?? STONE_PATHS.rect}
-        fill={done ? "var(--forest)" : "var(--line)"}
-        stroke={done ? "var(--forest-dark)" : "var(--muted)"}
-        strokeWidth={2}
+        fill={done ? "var(--ink)" : "var(--subtle)"}
+        stroke={done ? "var(--ink)" : "var(--muted)"}
+        strokeWidth={done ? 0 : 2}
         fillRule="evenodd"
       />
     </svg>

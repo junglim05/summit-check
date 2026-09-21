@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { photoUrl } from "@/lib/storage";
 import type { Mountain, Summit } from "@/lib/types";
 import StoneIcon from "@/components/StoneIcon";
+import { IconCamera } from "@/components/icons";
 
 export default async function MountainPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -33,7 +34,9 @@ export default async function MountainPage({ params }: { params: Promise<{ slug:
         </div>
       </div>
 
-      <Link href={`/verify?m=${mountain.slug}`} className="btn btn-primary w-full mb-6">📸 이 산 정상인증하기</Link>
+      <Link href={`/verify?m=${mountain.slug}`} className="btn btn-primary w-full mb-6">
+        <IconCamera size={18} /> 이 산 정상인증하기
+      </Link>
 
       <h2 className="font-bold mb-2">최근 인증 정상석</h2>
       {recent && recent.length > 0 ? (
@@ -48,7 +51,7 @@ export default async function MountainPage({ params }: { params: Promise<{ slug:
           ))}
         </div>
       ) : (
-        <p className="muted text-sm card p-5 text-center">아직 인증한 사람이 없어요. 첫 번째가 되어보세요!</p>
+        <p className="muted text-sm card p-5 text-center">아직 인증한 사람이 없어요. 첫 번째가 되어보세요.</p>
       )}
     </div>
   );

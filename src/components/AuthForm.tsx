@@ -61,7 +61,7 @@ export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
     <div className="pt-8">
       <h1 className="text-2xl font-bold mb-1">{mode === "login" ? "로그인" : "회원가입"}</h1>
       <p className="muted text-sm mb-6">
-        {mode === "login" ? "정상석 컬렉션을 이어서 채워보세요." : "서울·경기 28개 산, 정상에서 만나요."}
+        {mode === "login" ? "정상석 컬렉션을 이어서 채워보세요." : "서울·경기 28개 산, 하이피크에서 기록하세요."}
       </p>
 
       <form onSubmit={onSubmit} className="card p-5 flex flex-col gap-3">
@@ -94,8 +94,8 @@ export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        {info && <p className="text-sm" style={{ color: "var(--forest)" }}>{info}</p>}
+        {error && <p className="text-sm font-medium" style={{ color: "var(--ink)" }}>{error}</p>}
+        {info && <p className="text-sm font-medium">{info}</p>}
         <button className="btn btn-primary mt-1" disabled={loading}>
           {loading ? "처리 중…" : mode === "login" ? "로그인" : "가입하기"}
         </button>
@@ -105,14 +105,14 @@ export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
         {mode === "login" ? (
           <>
             아직 계정이 없나요?{" "}
-            <Link href={`/signup?next=${encodeURIComponent(next)}`} className="font-semibold" style={{ color: "var(--forest)" }}>
+            <Link href={`/signup?next=${encodeURIComponent(next)}`} className="font-semibold underline underline-offset-2" style={{ color: "var(--ink)" }}>
               회원가입
             </Link>
           </>
         ) : (
           <>
             이미 계정이 있나요?{" "}
-            <Link href={`/login?next=${encodeURIComponent(next)}`} className="font-semibold" style={{ color: "var(--forest)" }}>
+            <Link href={`/login?next=${encodeURIComponent(next)}`} className="font-semibold underline underline-offset-2" style={{ color: "var(--ink)" }}>
               로그인
             </Link>
           </>

@@ -1,9 +1,10 @@
 {
-  "name": "정상석 인증",
-  "short_name": "정상석",
+  "name": "하이피크",
+  "short_name": "하이피크",
+  "description": "정상에서만 인증되는 정상석 기록 서비스",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f6f7f4",
-  "theme_color": "#2f5d3a",
+  "background_color": "#f4f4f3",
+  "theme_color": "#101010",
   "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
 }

@@ -6,6 +6,7 @@ import type { Mountain } from "@/lib/types";
 import type { VerifyResult } from "@/lib/upload";
 import LiveCapture from "./LiveCapture";
 import ExifUpload from "./ExifUpload";
+import { IconCamera, IconCheck, IconImage } from "@/components/icons";
 
 type Tab = "live" | "exif";
 
@@ -16,8 +17,13 @@ export default function VerifyFlow({ mountains, preselectSlug }: { mountains: Mo
   if (result) {
     return (
       <div className="pt-10 text-center">
-        <div className="text-6xl mb-3">🎉</div>
-        <h1 className="text-2xl font-bold mb-1">{result.mountain.name} 정복!</h1>
+        <div
+          className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
+          style={{ background: "var(--fill)", color: "var(--on-fill)" }}
+        >
+          <IconCheck size={30} strokeWidth={2.2} />
+        </div>
+        <h1 className="text-2xl font-bold mb-1">{result.mountain.name} 정복</h1>
         <p className="muted text-sm mb-6">
           정상에서 {result.distance_m}m · {result.replaced ? "기존 인증 사진을 교체했어요" : "컬렉션에 추가되었어요"}
         </p>
@@ -32,9 +38,13 @@ export default function VerifyFlow({ mountains, preselectSlug }: { mountains: Mo
   return (
     <div>
       <h1 className="text-2xl font-bold mb-3">정상인증</h1>
-      <div className="grid grid-cols-2 gap-1 p-1 rounded-xl mb-4" style={{ background: "var(--line)" }}>
-        <TabBtn active={tab === "live"} onClick={() => setTab("live")}>📸 지금 정상에서</TabBtn>
-        <TabBtn active={tab === "exif"} onClick={() => setTab("exif")}>🖼️ 예전 사진으로</TabBtn>
+      <div className="grid grid-cols-2 gap-1 p-1 rounded-xl mb-4" style={{ background: "var(--subtle)", border: "1px solid var(--line)" }}>
+        <TabBtn active={tab === "live"} onClick={() => setTab("live")}>
+          <IconCamera size={16} /> 지금 정상에서
+        </TabBtn>
+        <TabBtn active={tab === "exif"} onClick={() => setTab("exif")}>
+          <IconImage size={16} /> 예전 사진으로
+        </TabBtn>
       </div>
 
       {tab === "live" ? (
@@ -50,7 +60,7 @@ function TabBtn({ active, onClick, children }: { active: boolean; onClick: () =>
   return (
     <button
       onClick={onClick}
-      className="py-2 rounded-lg text-sm font-semibold transition"
+      className="py-2 rounded-lg text-sm font-semibold transition inline-flex items-center justify-center gap-1.5"
       style={active ? { background: "var(--card)", color: "var(--ink)" } : { color: "var(--muted)" }}
     >
       {children}

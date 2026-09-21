@@ -6,6 +6,7 @@ import { photoUrl } from "@/lib/storage";
 import type { Mountain, Profile, RankingRow, Summit } from "@/lib/types";
 import StoneIcon from "@/components/StoneIcon";
 import DeleteSummitButton from "@/components/DeleteSummitButton";
+import { IconUser, Logo } from "@/components/icons";
 
 export default async function MePage() {
   const supabase = await createClient();
@@ -32,7 +33,12 @@ export default async function MePage() {
     <div>
       <section className="card p-5 mb-5">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-full flex items-center justify-center text-2xl" style={{ background: "var(--moss)" }}>🥾</div>
+          <div
+            className="w-14 h-14 rounded-full flex items-center justify-center shrink-0"
+            style={{ background: "var(--subtle)", color: "var(--muted)" }}
+          >
+            <IconUser size={26} />
+          </div>
           <div className="flex-1">
             <h1 className="text-xl font-bold">{p?.nickname ?? "등산가"}</h1>
             <p className="text-sm muted">{user.email}</p>
@@ -45,10 +51,10 @@ export default async function MePage() {
         </div>
       </section>
 
-      <h2 className="font-bold text-lg mb-2">🪨 내 정상석 모음집</h2>
+      <h2 className="font-bold text-lg mb-2">내 정상석 모음집</h2>
       {list.length === 0 ? (
         <div className="card p-6 text-center mb-6">
-          <p className="text-3xl mb-2">🏔️</p>
+          <Logo size={40} className="mx-auto mb-3 muted" />
           <p className="font-semibold mb-1">아직 인증한 정상석이 없어요</p>
           <p className="text-sm muted mb-4">첫 정상석을 컬렉션에 추가해 보세요.</p>
           <Link href="/verify" className="btn btn-primary">정상인증 시작</Link>
@@ -59,7 +65,7 @@ export default async function MePage() {
             <figure key={s.id} className="card overflow-hidden">
               <div className="relative aspect-square">
                 <Image src={photoUrl(s.photo_path)} alt={`${s.mountains?.name} 정상석`} fill sizes="50vw" className="object-cover" />
-                <span className="absolute top-2 left-2 text-[10px] px-2 py-0.5 rounded-full bg-black/55 text-white">
+                <span className="absolute top-2 left-2 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-black/60 text-white">
                   {s.method === "live" ? "현장 인증" : "사진 인증"}
                 </span>
               </div>
