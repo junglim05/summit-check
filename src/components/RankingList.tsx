@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { RankingRow, Summit } from "@/lib/types";
@@ -88,10 +89,11 @@ function ProfileModal({ row, isMe, onClose }: { row: RankingRow; isMe: boolean; 
     };
   }, [onClose]);
 
-  return (
+  // 헤더·탭바(z-20) 위로 확실히 올리기 위해 body 로 포털하고 z-index 는 인라인으로 준다
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
-      style={{ background: "rgba(0,0,0,.5)" }}
+      className="fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-4"
+      style={{ background: "rgba(0,0,0,.5)", zIndex: 100 }}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -163,7 +165,7 @@ function ProfileModal({ row, isMe, onClose }: { row: RankingRow; isMe: boolean; 
                   onClick={onClose}
                 >
                   <figure className="relative aspect-square rounded-xl overflow-hidden border border-[color:var(--line)]">
-                    <SummitPhoto path={s.photo_path} alt={`${s.mountains?.name ?? ""} 정상석`} sizes="33vw" />
+                    <SummitPhoto path={s.photo_path} alt={`${s.mountains?.name ?? ""} 정상석`} sizes="160px" eager />
                   </figure>
                   <figcaption className="mt-1">
                     <p className="text-[11px] font-semibold truncate">{s.mountains?.name}</p>
@@ -177,7 +179,8 @@ function ProfileModal({ row, isMe, onClose }: { row: RankingRow; isMe: boolean; 
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

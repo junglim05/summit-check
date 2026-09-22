@@ -14,11 +14,14 @@ export default function SummitPhoto({
   alt,
   sizes,
   className = "object-cover",
+  eager = false,
 }: {
   path: string;
   alt: string;
   sizes: string;
   className?: string;
+  /** 모달처럼 열리자마자 보이는 곳은 지연 로딩을 끈다 (IntersectionObserver 가 늦게 걸려 빈 칸으로 남는다) */
+  eager?: boolean;
 }) {
   const [step, setStep] = useState<0 | 1 | 2>(0);
 
@@ -39,6 +42,7 @@ export default function SummitPhoto({
       fill
       sizes={sizes}
       className={className}
+      loading={eager ? "eager" : undefined}
       unoptimized={step === 1 && needsDisplayCopy(path)}
       onError={() => setStep((s) => (s === 0 && needsDisplayCopy(path) ? 1 : 2))}
     />
