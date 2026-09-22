@@ -26,10 +26,36 @@ export const getMountains = unstable_cache(
   { revalidate: 3600, tags: ["mountains"] }
 );
 
+/** 화면에 지역을 노출하는 순서 (수도권 → 강원 → 충청 → 호남 → 영남 → 제주) */
+export const REGION_ORDER = [
+  "서울", "경기", "인천", "강원", "충북", "충남", "대전", "세종",
+  "전북", "전남", "광주", "경북", "경남", "대구", "부산", "울산", "제주",
+] as const;
+
+function regionRank(r: string): number {
+  const i = (REGION_ORDER as readonly string[]).indexOf(r);
+  return i === -1 ? REGION_ORDER.length : i;
+}
+
 /** 지역 → 고도 내림차순 (산 목록 화면 정렬) */
 export function byRegionThenElevation(a: Mountain, b: Mountain): number {
+  const ra = regionRank(a.region), rb = regionRank(b.region);
+  if (ra !== rb) return ra - rb;
   if (a.region !== b.region) return a.region < b.region ? -1 : 1;
   return b.elevation_m - a.elevation_m;
+}
+
+/** 지역별로 묶어 REGION_ORDER 순서대로 돌려준다. */
+export function groupByRegion(list: Mountain[]): { region: string; items: Mountain[] }[] {
+  const map = new Map<string, Mountain[]>();
+  for (const m of list) {
+    const arr = map.get(m.region);
+    if (arr) arr.push(m);
+    else map.set(m.region, [m]);
+  }
+  return [...map.entries()]
+    .map(([region, items]) => ({ region, items: items.sort((a, b) => b.elevation_m - a.elevation_m) }))
+    .sort((a, b) => regionRank(a.region) - regionRank(b.region));
 }
 
 /** 이름 오름차순 (인증 화면 선택 목록) */

@@ -61,7 +61,7 @@ export default function AuthForm({ mode }: { mode: "login" | "signup" }) {
     <div className="pt-8">
       <h1 className="text-2xl font-bold mb-1">{mode === "login" ? "로그인" : "회원가입"}</h1>
       <p className="muted text-sm mb-6">
-        {mode === "login" ? "정상석 컬렉션을 이어서 채워보세요." : "서울·경기 28개 산, 하이피크에서 기록하세요."}
+        {mode === "login" ? "정상석 컬렉션을 이어서 채워보세요." : "전국 100대 명산, 하이피크에서 기록하세요."}
       </p>
 
       <form onSubmit={onSubmit} className="card p-5 flex flex-col gap-3">

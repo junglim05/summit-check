@@ -3,8 +3,8 @@ import "./globals.css";
 import Nav from "@/components/Nav";
 
 export const metadata: Metadata = {
-  title: "하이피크 — 서울·경기 정상석 기록",
-  description: "GPS 로 정상에서만 인증되는 정상석 컬렉션. 서울·경기 28개 산을 하이피크에서 기록하세요.",
+  title: "하이피크 — 전국 100대 명산 정상석 기록",
+  description: "GPS 로 정상에서만 인증되는 정상석 컬렉션. 전국 100대 명산을 하이피크에서 기록하세요.",
   manifest: "/manifest.json",
 };
 

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getAuthUser } from "@/lib/supabase/auth";
-import { byRegionThenElevation, getMountains } from "@/lib/mountains";
+import { getMountains, groupByRegion } from "@/lib/mountains";
 import type { Mountain } from "@/lib/types";
 import StoneIcon from "@/components/StoneIcon";
 import { IconCamera, IconCheck, Logo } from "@/components/icons";
@@ -19,9 +19,8 @@ export default async function HomePage() {
   ]);
 
   const done = new Set((doneRows.data ?? []).map((s) => s.mountain_id));
-  const list = [...mountains].sort(byRegionThenElevation);
-  const seoul = list.filter((m) => m.region === "서울");
-  const gg = list.filter((m) => m.region === "경기");
+  const list = mountains;
+  const groups = groupByRegion(list);
   const progress = list.length ? Math.round((done.size / list.length) * 100) : 0;
 
   return (
@@ -31,7 +30,7 @@ export default async function HomePage() {
         style={{ background: "var(--fill)", color: "var(--on-fill)", border: "none" }}
       >
         <Logo size={120} className="absolute -right-5 -bottom-6 opacity-[.08] pointer-events-none" />
-        <p className="text-xs tracking-widest uppercase opacity-60 mb-2">Highpeak</p>
+        <p className="text-xs tracking-widest uppercase opacity-60 mb-2">Highpeak · 전국 100대 명산</p>
         {user ? (
           <>
             <h1 className="text-2xl font-bold leading-tight mb-3">
@@ -55,8 +54,9 @@ export default async function HomePage() {
         </Link>
       </section>
 
-      <Group title="서울" items={seoul} done={done} />
-      <Group title="경기" items={gg} done={done} />
+      {groups.map((g) => (
+        <Group key={g.region} title={g.region} items={g.items} done={done} />
+      ))}
     </div>
   );
 }

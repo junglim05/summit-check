@@ -1,6 +1,6 @@
 # 하이피크 (Highpeak)
 
-서울·경기 28개 산의 정상석을 GPS 기반으로 인증하고 컬렉션·랭킹을 쌓는 모바일 웹앱.
+전국 100대 명산의 정상석을 GPS 기반으로 인증하고 컬렉션·랭킹을 쌓는 모바일 웹앱.
 
 무채색 단색 UI, 산 모양 로고 마크를 쓴다.
 
@@ -24,6 +24,8 @@ npm run dev                   # http://localhost:3000
 2. SQL Editor 에서 순서대로 실행
    - `supabase/migrations/0001_init.sql` — 테이블·RLS·Storage 버킷·랭킹 뷰
    - `supabase/migrations/0002_seed_mountains.sql` — 서울/경기 산 시드
+   - `supabase/migrations/0003_summit_point_names.sql` — 정상 지명 표기
+   - `supabase/migrations/0004_top100_mountains.sql` — 100대 명산 + 좌표 보정
 3. Authentication → Providers → Email 활성화
    - 개발 중엔 **Confirm email OFF** 가 편함 (운영 땐 ON + SMTP 설정)
 4. Project Settings → API 에서 URL / anon key / service_role key 복사 → `.env.local`
