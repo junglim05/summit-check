@@ -28,6 +28,15 @@ npm run dev                   # http://localhost:3000
    - 개발 중엔 **Confirm email OFF** 가 편함 (운영 땐 ON + SMTP 설정)
 4. Project Settings → API 에서 URL / anon key / service_role key 복사 → `.env.local`
 
+## 산 데이터 수정 시
+
+`supabase/migrations` 로 DB 를 고친 뒤 캐시 태그를 무효화해야 즉시 반영된다
+(산 목록은 `unstable_cache` 로 1시간 캐시되며 Vercel 데이터 캐시는 재배포로 지워지지 않는다).
+
+```bash
+vercel cache invalidate --tag mountains
+```
+
 ## 구조
 
 ```

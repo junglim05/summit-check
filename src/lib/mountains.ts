@@ -6,6 +6,10 @@ import type { Mountain } from "@/lib/types";
  * 산 목록은 사실상 정적인 시드 데이터(28행)라 요청마다 조회할 이유가 없다.
  * 쿠키를 쓰지 않는 anon 클라이언트로 읽어 Next 데이터 캐시에 담는다
  * (mountains 는 select 가 모두에게 열린 테이블).
+ *
+ * ⚠️ 이 캐시는 Vercel 데이터 캐시라 재배포로 지워지지 않는다. 시드(이름·좌표 등)를
+ * 바꾼 뒤에는 태그를 무효화해야 즉시 반영된다:
+ *     vercel cache invalidate --tag mountains
  */
 export const getMountains = unstable_cache(
   async (): Promise<Mountain[]> => {
