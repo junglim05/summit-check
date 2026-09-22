@@ -50,6 +50,20 @@ function pinDataUri(m: Mountain, done: boolean, active: boolean): string {
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
 
+/** 위·경도 양 끝 5%를 떼어낸 목록 (섬 때문에 화면이 넓어지는 것을 막는다) */
+function trimOutliers(list: Mountain[]): Mountain[] {
+  const q = (vals: number[], p: number) => {
+    const s = [...vals].sort((a, b) => a - b);
+    return s[Math.min(s.length - 1, Math.floor(s.length * p))];
+  };
+  const lats = list.map((m) => m.lat);
+  const lngs = list.map((m) => m.lng);
+  const [latLo, latHi] = [q(lats, 0.05), q(lats, 0.95)];
+  const [lngLo, lngHi] = [q(lngs, 0.05), q(lngs, 0.95)];
+  const kept = list.filter((m) => m.lat >= latLo && m.lat <= latHi && m.lng >= lngLo && m.lng <= lngHi);
+  return kept.length >= 3 ? kept : list;
+}
+
 export default function MountainMap({
   mountains,
   doneIds,
@@ -131,12 +145,6 @@ export default function MountainMap({
         });
         mapRef.current = map;
         map.setZoomable(true);
-        // 초기 화면을 산 분포에 맞춘다 (고정 레벨이면 북한·일본까지 들어온다)
-        if (mountains.length) {
-          const b = new kakao.maps.LatLngBounds();
-          for (const m of mountains) b.extend(new kakao.maps.LatLng(m.lat, m.lng));
-          map.setBounds(b, 24, 24, 24, 24);
-        }
 
         clustererRef.current = new kakao.maps.MarkerClusterer({
           map,
@@ -189,11 +197,15 @@ export default function MountainMap({
     const shown = visible.map((m) => markersRef.current.get(m.id)).filter(Boolean);
     clusterer.addMarkers(shown);
     if (!visible.length) return;
+
+    // 전체 보기에서는 흑산도·울릉도·제주 같은 이상치까지 담으면 화면이 과하게
+    // 넓어진다. 5~95 퍼센타일 범위로 본토 중심을 잡는다 (섬은 축소하면 보인다).
+    const fitTo = region === "전체" && visible.length > 20 ? trimOutliers(visible) : visible;
     const bounds = new kakao.maps.LatLngBounds();
-    for (const m of visible) bounds.extend(new kakao.maps.LatLng(m.lat, m.lng));
+    for (const m of fitTo) bounds.extend(new kakao.maps.LatLng(m.lat, m.lng));
     mapRef.current.setBounds(bounds, 40, 40, 40, 40);
     if (selectedRef.current && !visible.some((m) => m.id === selectedRef.current)) select(null);
-  }, [visible, ready, select]);
+  }, [visible, ready, select, region]);
 
   function locate() {
     if (!navigator.geolocation) return;
