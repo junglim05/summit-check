@@ -43,16 +43,11 @@ export default function MountainMap({
       });
       mapRef.current = map;
 
-      const dark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
-      // 무채색 베이스맵 — 서비스 디자인과 같은 결로 맞춘다
-      L.tileLayer(
-        `https://{s}.basemaps.cartocdn.com/${dark ? "dark_all" : "light_all"}/{z}/{x}/{y}{r}.png`,
-        {
-          attribution: '&copy; OpenStreetMap &copy; CARTO',
-          subdomains: "abcd",
-          maxZoom: 19,
-        },
-      ).addTo(map);
+      // OSM 기본 타일(키 불필요). 색은 CSS 필터로 빼서 서비스의 무채색 결에 맞춘다.
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 18,
+      }).addTo(map);
       L.control.zoom({ position: "bottomright" }).addTo(map);
 
       for (const m of mountains) {
@@ -127,7 +122,7 @@ export default function MountainMap({
     <div className="relative">
       <div
         ref={boxRef}
-        className="w-full rounded-2xl overflow-hidden border border-[color:var(--line)]"
+        className="map-mono w-full rounded-2xl overflow-hidden border border-[color:var(--line)]"
         style={{ height: "calc(100dvh - 15rem)", minHeight: 360, background: "var(--subtle)" }}
         onClick={(e) => {
           // 지도 빈 곳을 누르면 선택 해제 (마커 클릭은 위에서 처리)
