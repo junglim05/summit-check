@@ -80,17 +80,3 @@ html, body {
 }
 .chip-solid { background: var(--fill); color: var(--on-fill); border-color: var(--fill); }
 
-/* 지도: 기본 타일의 색을 빼서 서비스의 무채색 팔레트에 맞춘다 */
-.map-mono .leaflet-tile-pane { filter: grayscale(1) contrast(.92) brightness(1.06); }
-.map-mono .leaflet-control-attribution {
-  background: color-mix(in srgb, var(--card) 85%, transparent);
-  color: var(--muted); font-size: 10px;
-}
-.map-mono .leaflet-control-attribution a { color: var(--muted); }
-.map-mono .leaflet-bar a {
-  background: var(--card); color: var(--ink); border-bottom-color: var(--line);
-}
-.map-mono .leaflet-bar a:hover { background: var(--subtle); }
-@media (prefers-color-scheme: dark) {
-  .map-mono .leaflet-tile-pane { filter: grayscale(1) invert(1) brightness(.9) contrast(1.1); }
-}

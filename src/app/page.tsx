@@ -66,7 +66,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       </div>
 
       {isMap ? (
-        <MountainMap mountains={list} doneIds={[...done]} />
+        <MountainMap mountains={list} doneIds={[...done]} appKey={process.env.NEXT_PUBLIC_KAKAO_MAP_KEY} />
       ) : (
         groups.map((g) => <Group key={g.region} title={g.region} items={g.items} done={done} />)
       )}
