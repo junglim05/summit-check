@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getAuthUser } from "@/lib/supabase/auth";
 import type { RankingRow } from "@/lib/types";
+import RankingList from "@/components/RankingList";
 
 export default async function RankingPage() {
   const supabase = await createClient();
@@ -29,34 +30,7 @@ export default async function RankingPage() {
       {list.length === 0 ? (
         <p className="card p-6 text-center muted text-sm">아직 인증한 사람이 없어요. 첫 정복자가 되어보세요.</p>
       ) : (
-        <ol className="card divide-y divide-[color:var(--line)]">
-          {list.map((r) => (
-            <li key={r.user_id} className="flex items-center gap-3 p-3">
-              <span
-                className="w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-xs font-bold tabular-nums"
-                style={
-                  r.rank <= 3
-                    ? { background: "var(--fill)", color: "var(--on-fill)" }
-                    : { background: "var(--subtle)", color: "var(--muted)" }
-                }
-              >
-                {r.rank}
-              </span>
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold truncate">{r.nickname}</p>
-                <p className="text-xs muted">
-                  {r.last_summit_at ? `최근 ${new Date(r.last_summit_at).toLocaleDateString("ko-KR")}` : ""}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="font-bold tabular-nums">
-                  {r.summit_count}<span className="text-xs muted font-normal">개</span>
-                </p>
-                <p className="text-xs muted tabular-nums">{r.total_elevation.toLocaleString()}m</p>
-              </div>
-            </li>
-          ))}
-        </ol>
+        <RankingList rows={list} meId={user?.id} />
       )}
     </div>
   );
