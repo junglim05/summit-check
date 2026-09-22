@@ -123,7 +123,7 @@ export default function MountainMap({
       <div
         ref={boxRef}
         className="map-mono w-full rounded-2xl overflow-hidden border border-[color:var(--line)]"
-        style={{ height: "calc(100dvh - 15rem)", minHeight: 360, background: "var(--subtle)" }}
+        style={{ height: "calc(100dvh - 11.5rem)", minHeight: 420, background: "var(--subtle)" }}
         onClick={(e) => {
           // 지도 빈 곳을 누르면 선택 해제 (마커 클릭은 위에서 처리)
           if ((e.target as HTMLElement).classList.contains("leaflet-container")) select(null);

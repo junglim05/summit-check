@@ -28,6 +28,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
   return (
     <div>
+      {!isMap && (
       <section
         className="card p-5 mb-5 relative overflow-hidden"
         style={{ background: "var(--fill)", color: "var(--on-fill)", border: "none" }}
@@ -56,6 +57,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           <IconCamera size={18} /> 지금 정상인증하기
         </Link>
       </section>
+      )}
 
       <div className="flex items-center gap-2 mb-3">
         <ViewTab href="/" active={!isMap} label="목록" />

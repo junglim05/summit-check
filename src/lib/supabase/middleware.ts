@@ -35,9 +35,13 @@ export async function updateSession(request: NextRequest) {
   const needsAuth = PROTECTED.some((p) => path === p || path.startsWith(p + "/"));
 
   if (!isLoggedIn && needsAuth) {
+    // 쿼리까지 포함해 돌려보내야 한다. 지도에서 고른 산(/verify?m=slug) 처럼
+    // 파라미터에 맥락이 담긴 경로가 로그인 후 사라지면 안 된다.
+    const next = path + request.nextUrl.search;
     const url = request.nextUrl.clone();
     url.pathname = "/login";
-    url.searchParams.set("next", path);
+    url.search = "";
+    url.searchParams.set("next", next);
     return NextResponse.redirect(url);
   }
 
