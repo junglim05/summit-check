@@ -86,7 +86,7 @@ export default async function MePage() {
           <div className="card p-3 flex flex-wrap gap-2">
             {remaining.map((m) => (
               <Link key={m.id} href={`/mountains/${m.slug}`} className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg border border-[color:var(--line)]">
-                <StoneIcon shape={m.stone_shape} size={16} /> {m.name}
+                <StoneIcon slug={m.slug} shape={m.stone_shape} size={16} /> {m.name}
               </Link>
             ))}
           </div>

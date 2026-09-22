@@ -27,7 +27,7 @@ export default async function MountainPage({ params }: { params: Promise<{ slug:
   return (
     <div>
       <div className="card p-5 mb-4 flex items-center gap-4">
-        <StoneIcon shape={mountain.stone_shape} size={56} done />
+        <StoneIcon slug={mountain.slug} shape={mountain.stone_shape} size={56} done />
         <div>
           <span className="chip mb-1">{mountain.region} · {mountain.district}</span>
           <h1 className="text-2xl font-bold">{mountain.name}</h1>

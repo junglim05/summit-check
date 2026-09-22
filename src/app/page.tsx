@@ -73,7 +73,7 @@ function Group({ title, items, done }: { title: string; items: Mountain[]; done:
           return (
             <li key={m.id}>
               <Link href={`/mountains/${m.slug}`} className="flex items-center gap-3 p-3 hover:bg-black/[.02]">
-                <StoneIcon shape={m.stone_shape} size={36} done={ok} />
+                <StoneIcon slug={m.slug} shape={m.stone_shape} size={36} done={ok} />
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold">{m.name}</p>
                   <p className="text-xs muted">{m.district} · {m.elevation_m}m</p>

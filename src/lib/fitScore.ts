@@ -1,5 +1,3 @@
-import type { StoneShape } from "@/lib/types";
-import { STONE_PATHS } from "@/components/StoneIcon";
 
 /**
  * 정상석 실루엣 정합 점수 (0~1) — 경량 휴리스틱.
@@ -9,7 +7,8 @@ import { STONE_PATHS } from "@/components/StoneIcon";
  */
 export function computeFitScore(
   video: HTMLVideoElement,
-  shape: StoneShape,
+  /** 정상석 실루엣 path (@/lib/stones) */
+  path: string,
   overlayBox: { x: number; y: number; w: number; h: number }, // 화면 비율(0~1) 기준 오버레이 위치
 ): number {
   const W = 96, H = 128;
@@ -31,7 +30,7 @@ export function computeFitScore(
   mctx.translate(overlayBox.x * W, overlayBox.y * H);
   mctx.scale((overlayBox.w * W) / 100, (overlayBox.h * H) / 100);
   mctx.fillStyle = "#fff";
-  mctx.fill(new Path2D(STONE_PATHS[shape] ?? STONE_PATHS.rect), "evenodd");
+  mctx.fill(new Path2D(path), "evenodd");
   mctx.restore();
 
   const f = fctx.getImageData(0, 0, W, H).data;
