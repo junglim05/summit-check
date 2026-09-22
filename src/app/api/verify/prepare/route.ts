@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/auth";
+import { getMountains } from "@/lib/mountains";
 
 /**
  * 1단계: 사진 업로드용 서명 URL 발급.
@@ -8,9 +10,7 @@ import { createClient, createAdminClient } from "@/lib/supabase/server";
  */
 export async function POST(req: Request) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAuthUser(supabase);
   if (!user) return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
 
   const { mountainId, contentType, fileName, wantDisplayCopy } = (await req.json()) as {
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
   // EXIF 인증은 서버가 좌표로 산을 특정할 수 있으므로 mountainId 가 없어도 받는다.
   let slug = "photo";
   if (mountainId) {
-    const { data: mountain } = await supabase.from("mountains").select("slug").eq("id", mountainId).single();
+    const mountain = (await getMountains()).find((m) => m.id === mountainId);
     if (!mountain) return NextResponse.json({ error: "존재하지 않는 산" }, { status: 404 });
     slug = mountain.slug;
   }

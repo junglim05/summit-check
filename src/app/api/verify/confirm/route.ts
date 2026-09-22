@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import exifr from "exifr";
 import { createClient, createAdminClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/auth";
+import { getMountains } from "@/lib/mountains";
 import { distanceM } from "@/lib/geo";
 import type { Mountain } from "@/lib/types";
 
@@ -34,9 +36,7 @@ const EXIF_RADIUS_MULTIPLIER = 1.5; // 과거 사진은 GPS 오차 여유를 조
  */
 export async function POST(req: Request) {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAuthUser(supabase);
   if (!user) return NextResponse.json({ error: "로그인이 필요합니다." }, { status: 401 });
 
   const body = (await req.json()) as ConfirmBody;
@@ -57,9 +57,8 @@ export async function POST(req: Request) {
 
   let mountain: Mountain | null = null;
   if (body.mountainId) {
-    const { data: m } = await admin.from("mountains").select("*").eq("id", body.mountainId).single();
-    if (!m) return fail("존재하지 않는 산입니다.", 404);
-    mountain = m as Mountain;
+    mountain = (await getMountains()).find((m) => m.id === body.mountainId) ?? null;
+    if (!mountain) return fail("존재하지 않는 산입니다.", 404);
   } else if (body.method === "live") {
     return fail("산이 지정되지 않았습니다.");
   }
@@ -102,9 +101,8 @@ export async function POST(req: Request) {
 
     // 클라이언트가 산을 특정하지 못한 경우(HEIC 등 브라우저 파싱 실패) 서버가 고른다.
     if (!mountain) {
-      const { data: all } = await admin.from("mountains").select("*");
       let best: { m: Mountain; d: number } | null = null;
-      for (const cand of (all ?? []) as Mountain[]) {
+      for (const cand of await getMountains()) {
         const d = distanceM(lat, lng, cand.lat, cand.lng);
         if (!Number.isFinite(d)) continue;
         if (!best || d < best.d) best = { m: cand, d };

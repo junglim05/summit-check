@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import type { Mountain, Profile, RankingRow, Summit } from "@/lib/types";
+import { getAuthUser } from "@/lib/supabase/auth";
+import { getMountains } from "@/lib/mountains";
+import type { Profile, RankingRow, Summit } from "@/lib/types";
 import StoneIcon from "@/components/StoneIcon";
 import DeleteSummitButton from "@/components/DeleteSummitButton";
 import SummitPhoto from "@/components/SummitPhoto";
@@ -9,21 +11,19 @@ import { IconUser, Logo } from "@/components/icons";
 
 export default async function MePage() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAuthUser(supabase);
   if (!user) redirect("/login?next=/me");
 
-  const [{ data: profile }, { data: summits }, { data: mountains }, { data: rank }] = await Promise.all([
+  const [{ data: profile }, { data: summits }, mountains, { data: rank }] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).single(),
     supabase.from("summits").select("*, mountains(*)").eq("user_id", user.id).order("created_at", { ascending: false }),
-    supabase.from("mountains").select("*"),
+    getMountains(),
     supabase.from("rankings").select("*").eq("user_id", user.id).maybeSingle(),
   ]);
 
   const p = profile as Profile | null;
   const list = (summits ?? []) as Summit[];
-  const all = (mountains ?? []) as Mountain[];
+  const all = mountains;
   const r = rank as RankingRow | null;
   const doneIds = new Set(list.map((s) => s.mountain_id));
   const remaining = all.filter((m) => !doneIds.has(m.id));

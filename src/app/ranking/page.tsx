@@ -1,11 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/auth";
 import type { RankingRow } from "@/lib/types";
 
 export default async function RankingPage() {
   const supabase = await createClient();
-  const [{ data: rows }, { data: { user } }] = await Promise.all([
+  const [{ data: rows }, user] = await Promise.all([
     supabase.from("rankings").select("*").gt("summit_count", 0).order("rank").limit(100),
-    supabase.auth.getUser(),
+    getAuthUser(supabase),
   ]);
   const list = (rows ?? []) as RankingRow[];
   const me = user ? list.find((r) => r.user_id === user.id) : undefined;

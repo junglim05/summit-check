@@ -1,26 +1,28 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import type { Mountain, Summit } from "@/lib/types";
+import { getMountains } from "@/lib/mountains";
+import type { Summit } from "@/lib/types";
 import StoneIcon from "@/components/StoneIcon";
 import { IconCamera } from "@/components/icons";
 import SummitPhoto from "@/components/SummitPhoto";
 
 export default async function MountainPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const mountain = (await getMountains()).find((m) => m.slug === slug);
+  if (!mountain) notFound();
+
+  // 최근 사진과 인증자 수는 실시간 데이터라 병렬로 함께 조회한다.
   const supabase = await createClient();
-  const { data: m } = await supabase.from("mountains").select("*").eq("slug", slug).single();
-  if (!m) notFound();
-  const mountain = m as Mountain;
-
-  const { data: recent } = await supabase
-    .from("summits")
-    .select("id, photo_path, created_at, method, profiles(nickname)")
-    .eq("mountain_id", mountain.id)
-    .order("created_at", { ascending: false })
-    .limit(12);
-
-  const { count } = await supabase.from("summits").select("*", { count: "exact", head: true }).eq("mountain_id", mountain.id);
+  const [{ data: recent }, { count }] = await Promise.all([
+    supabase
+      .from("summits")
+      .select("id, photo_path, created_at, method, profiles(nickname)")
+      .eq("mountain_id", mountain.id)
+      .order("created_at", { ascending: false })
+      .limit(12),
+    supabase.from("summits").select("*", { count: "exact", head: true }).eq("mountain_id", mountain.id),
+  ]);
 
   return (
     <div>

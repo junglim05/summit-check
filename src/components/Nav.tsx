@@ -1,14 +1,12 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/auth";
 import SignOutButton from "./SignOutButton";
 import TabBar from "./TabBar";
 import { Wordmark } from "./icons";
 
 export default async function Nav() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAuthUser(await createClient());
 
   return (
     <>

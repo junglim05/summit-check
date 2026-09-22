@@ -1,23 +1,25 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { getAuthUser } from "@/lib/supabase/auth";
+import { byRegionThenElevation, getMountains } from "@/lib/mountains";
 import type { Mountain } from "@/lib/types";
 import StoneIcon from "@/components/StoneIcon";
 import { IconCamera, IconCheck, Logo } from "@/components/icons";
 
 export default async function HomePage() {
   const supabase = await createClient();
-  const [{ data: mountains }, { data: { user } }] = await Promise.all([
-    supabase.from("mountains").select("*").order("region").order("elevation_m", { ascending: false }),
-    supabase.auth.getUser(),
+  // 로컬 JWT 검증이라 네트워크 왕복이 없다 → 산 목록(캐시)과 내 인증 목록을
+  // 곧바로 병렬로 조회할 수 있다 (기존에는 getUser() 응답을 기다린 뒤 조회).
+  const user = await getAuthUser(supabase);
+  const [mountains, doneRows] = await Promise.all([
+    getMountains(),
+    user
+      ? supabase.from("summits").select("mountain_id").eq("user_id", user.id)
+      : Promise.resolve({ data: [] as { mountain_id: number }[] }),
   ]);
 
-  let done = new Set<number>();
-  if (user) {
-    const { data } = await supabase.from("summits").select("mountain_id").eq("user_id", user.id);
-    done = new Set((data ?? []).map((s) => s.mountain_id));
-  }
-
-  const list = (mountains ?? []) as Mountain[];
+  const done = new Set((doneRows.data ?? []).map((s) => s.mountain_id));
+  const list = [...mountains].sort(byRegionThenElevation);
   const seoul = list.filter((m) => m.region === "서울");
   const gg = list.filter((m) => m.region === "경기");
   const progress = list.length ? Math.round((done.size / list.length) * 100) : 0;
