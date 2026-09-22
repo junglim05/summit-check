@@ -6,7 +6,7 @@ import type { Mountain } from "@/lib/types";
 import type { VerifyResult } from "@/lib/upload";
 import LiveCapture from "./LiveCapture";
 import ExifUpload from "./ExifUpload";
-import { IconCamera, IconCheck, IconImage } from "@/components/icons";
+import { IconCamera, IconCheck, IconImage, IconPin } from "@/components/icons";
 
 type Tab = "live" | "exif";
 
@@ -37,7 +37,12 @@ export default function VerifyFlow({ mountains, preselectSlug }: { mountains: Mo
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-3">정상인증</h1>
+      <div className="flex items-center justify-between mb-3">
+        <h1 className="text-2xl font-bold">정상인증</h1>
+        <Link href="/?view=map" className="text-sm font-semibold inline-flex items-center gap-1 muted">
+          <IconPin size={15} /> 지도에서 찾기
+        </Link>
+      </div>
       <div className="grid grid-cols-2 gap-1 p-1 rounded-xl mb-4" style={{ background: "var(--subtle)", border: "1px solid var(--line)" }}>
         <TabBtn active={tab === "live"} onClick={() => setTab("live")}>
           <IconCamera size={16} /> 지금 정상에서

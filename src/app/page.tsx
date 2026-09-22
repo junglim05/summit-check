@@ -4,9 +4,12 @@ import { getAuthUser } from "@/lib/supabase/auth";
 import { getMountains, groupByRegion } from "@/lib/mountains";
 import type { Mountain } from "@/lib/types";
 import StoneIcon from "@/components/StoneIcon";
-import { IconCamera, IconCheck, Logo } from "@/components/icons";
+import { IconCamera, IconCheck, IconPin, Logo } from "@/components/icons";
+import MountainMap from "@/components/MountainMap";
 
-export default async function HomePage() {
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
+  const { view } = await searchParams;
+  const isMap = view === "map";
   const supabase = await createClient();
   // 로컬 JWT 검증이라 네트워크 왕복이 없다 → 산 목록(캐시)과 내 인증 목록을
   // 곧바로 병렬로 조회할 수 있다 (기존에는 getUser() 응답을 기다린 뒤 조회).
@@ -54,10 +57,35 @@ export default async function HomePage() {
         </Link>
       </section>
 
-      {groups.map((g) => (
-        <Group key={g.region} title={g.region} items={g.items} done={done} />
-      ))}
+      <div className="flex items-center gap-2 mb-3">
+        <ViewTab href="/" active={!isMap} label="목록" />
+        <ViewTab href="/?view=map" active={isMap} label="지도" icon />
+        <span className="ml-auto text-xs muted">{list.length}개 산</span>
+      </div>
+
+      {isMap ? (
+        <MountainMap mountains={list} doneIds={[...done]} />
+      ) : (
+        groups.map((g) => <Group key={g.region} title={g.region} items={g.items} done={done} />)
+      )}
     </div>
+  );
+}
+
+function ViewTab({ href, active, label, icon }: { href: string; active: boolean; label: string; icon?: boolean }) {
+  return (
+    <Link
+      href={href}
+      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold border transition"
+      style={
+        active
+          ? { background: "var(--fill)", color: "var(--on-fill)", borderColor: "var(--fill)" }
+          : { background: "transparent", color: "var(--muted)", borderColor: "var(--line)" }
+      }
+    >
+      {icon && <IconPin size={14} />}
+      {label}
+    </Link>
   );
 }
 
