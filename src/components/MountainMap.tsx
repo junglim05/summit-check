@@ -127,10 +127,16 @@ export default function MountainMap({
         kakaoRef.current = kakao;
         const map = new kakao.maps.Map(boxRef.current, {
           center: new kakao.maps.LatLng(36.4, 127.9),
-          level: 13,
+          level: 12,
         });
         mapRef.current = map;
         map.setZoomable(true);
+        // 초기 화면을 산 분포에 맞춘다 (고정 레벨이면 북한·일본까지 들어온다)
+        if (mountains.length) {
+          const b = new kakao.maps.LatLngBounds();
+          for (const m of mountains) b.extend(new kakao.maps.LatLng(m.lat, m.lng));
+          map.setBounds(b, 24, 24, 24, 24);
+        }
 
         clustererRef.current = new kakao.maps.MarkerClusterer({
           map,
