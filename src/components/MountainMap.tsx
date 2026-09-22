@@ -162,7 +162,11 @@ export default function MountainMap({
         kakao.maps.event.addListener(map, "click", () => select(null));
         setReady(true);
       })
-      .catch(() => setErr("지도를 불러오지 못했어요. 카카오 개발자센터에 이 도메인이 등록되어 있는지 확인해 주세요."));
+      .catch(() =>
+        setErr(
+          "지도를 불러오지 못했어요. 카카오 개발자센터에서 ① 카카오맵 제품이 활성화되어 있는지, ② Web 플랫폼에 이 도메인이 등록되어 있는지 확인해 주세요.",
+        ),
+      );
     return () => {
       dead = true;
     };
