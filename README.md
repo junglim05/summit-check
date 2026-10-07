@@ -26,6 +26,7 @@ npm run dev                   # http://localhost:3000
    - `supabase/migrations/0002_seed_mountains.sql` — 서울/경기 산 시드
    - `supabase/migrations/0003_summit_point_names.sql` — 정상 지명 표기
    - `supabase/migrations/0004_top100_mountains.sql` — 100대 명산 + 좌표 보정
+   - `supabase/migrations/0005_geumhaksan.sql` — 금학산(철원) 추가
 3. Authentication → Providers → Email 활성화
    - 개발 중엔 **Confirm email OFF** 가 편함 (운영 땐 ON + SMTP 설정)
 4. Project Settings → API 에서 URL / anon key / service_role key 복사 → `.env.local`
