@@ -50,6 +50,35 @@ function pinDataUri(m: Mountain, done: boolean, active: boolean): string {
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
 
+/** 이 레벨 이하로 확대하면 핀 위에 산 이름을 띄운다 (클러스터가 풀리는 minLevel 10 바로 아래) */
+const LABEL_LEVEL = 9;
+
+/** 핀 위 산 이름 라벨. 핀과 같은 흑백 반전 규칙을 따른다. */
+function labelElement(m: Mountain, done: boolean): HTMLDivElement {
+  const el = document.createElement("div");
+  el.textContent = m.name;
+  Object.assign(el.style, {
+    padding: "2px 7px",
+    borderRadius: "999px",
+    border: "1px solid #101010",
+    background: done ? "#101010" : "#ffffff",
+    color: done ? "#ffffff" : "#101010",
+    fontSize: "11px",
+    fontWeight: "700",
+    lineHeight: "16px",
+    whiteSpace: "nowrap",
+    boxShadow: "0 1px 3px rgba(0,0,0,.18)",
+    pointerEvents: "none",
+  });
+  return el;
+}
+
+/** 라벨 아랫단을 핀 머리 바로 위로 올린다 (핀 높이 h, 앵커는 끝에서 2px 위) */
+function placeLabel(el: HTMLElement, active: boolean) {
+  const h = active ? 48 : 38;
+  el.style.transform = `translateY(-${h + 1}px)`;
+}
+
 /** 위·경도 양 끝 5%를 떼어낸 목록 (섬 때문에 화면이 넓어지는 것을 막는다) */
 function trimOutliers(list: Mountain[]): Mountain[] {
   const q = (vals: number[], p: number) => {
@@ -91,12 +120,27 @@ export default function MountainMap({
   const mapRef = useRef<any>(null);
   const markersRef = useRef<Map<number, any>>(new Map());
   const clustererRef = useRef<any>(null);
+  const labelsRef = useRef<Map<number, { overlay: any; el: HTMLDivElement }>>(new Map());
   const selectedRef = useRef<number | null>(null);
 
   const visible = useMemo(
     () => (region === "전체" ? mountains : mountains.filter((m) => m.region === region)),
     [mountains, region],
   );
+  const visibleRef = useRef(visible);
+  visibleRef.current = visible;
+
+  /** 확대 레벨과 지역 필터에 맞춰 이름 라벨을 켜고 끈다 */
+  const syncLabels = useCallback(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    const show = map.getLevel() <= LABEL_LEVEL;
+    const ids = new Set(visibleRef.current.map((m) => m.id));
+    for (const [id, { overlay }] of labelsRef.current) {
+      const want = show && ids.has(id);
+      if (want !== (overlay.getMap() != null)) overlay.setMap(want ? map : null);
+    }
+  }, []);
 
   const paint = useCallback(
     (m: Mountain, active: boolean) => {
@@ -110,6 +154,11 @@ export default function MountainMap({
         }),
       );
       marker.setZIndex(active ? 10 : 1);
+      const label = labelsRef.current.get(m.id);
+      if (label) {
+        placeLabel(label.el, active);
+        label.overlay.setZIndex(active ? 11 : 2);
+      }
     },
     [done],
   );
@@ -149,7 +198,7 @@ export default function MountainMap({
         clustererRef.current = new kakao.maps.MarkerClusterer({
           map,
           averageCenter: true,
-          minLevel: 8,
+          minLevel: LABEL_LEVEL + 1,
           disableClickZoom: false,
           styles: [
             {
@@ -171,9 +220,23 @@ export default function MountainMap({
           });
           kakao.maps.event.addListener(marker, "click", () => select(m));
           markersRef.current.set(m.id, marker);
+
+          const el = labelElement(m, done.has(m.id));
+          placeLabel(el, false);
+          const overlay = new kakao.maps.CustomOverlay({
+            position: new kakao.maps.LatLng(m.lat, m.lng),
+            content: el,
+            xAnchor: 0.5,
+            yAnchor: 1,
+            zIndex: 2,
+            clickable: false,
+          });
+          labelsRef.current.set(m.id, { overlay, el });
         }
         clustererRef.current.addMarkers([...markersRef.current.values()]);
         kakao.maps.event.addListener(map, "click", () => select(null));
+        kakao.maps.event.addListener(map, "zoom_changed", syncLabels);
+        syncLabels();
         setReady(true);
       })
       .catch(() =>
@@ -204,8 +267,9 @@ export default function MountainMap({
     const bounds = new kakao.maps.LatLngBounds();
     for (const m of fitTo) bounds.extend(new kakao.maps.LatLng(m.lat, m.lng));
     mapRef.current.setBounds(bounds, 40, 40, 40, 40);
+    syncLabels();
     if (selectedRef.current && !visible.some((m) => m.id === selectedRef.current)) select(null);
-  }, [visible, ready, select, region]);
+  }, [visible, ready, select, region, syncLabels]);
 
   function locate() {
     if (!navigator.geolocation) return;

@@ -9,7 +9,8 @@ import MountainMap from "@/components/MountainMap";
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
   const { view } = await searchParams;
-  const isMap = view === "map";
+  // 기본 화면은 지도, 목록은 ?view=list
+  const isMap = view !== "list";
   const supabase = await createClient();
   // 로컬 JWT 검증이라 네트워크 왕복이 없다 → 산 목록(캐시)과 내 인증 목록을
   // 곧바로 병렬로 조회할 수 있다 (기존에는 getUser() 응답을 기다린 뒤 조회).
@@ -60,8 +61,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
       )}
 
       <div className="flex items-center gap-2 mb-3">
-        <ViewTab href="/" active={!isMap} label="목록" />
-        <ViewTab href="/?view=map" active={isMap} label="지도" icon />
+        <ViewTab href="/" active={isMap} label="지도" icon />
+        <ViewTab href="/?view=list" active={!isMap} label="목록" />
         <span className="ml-auto text-xs muted">{list.length}개 산</span>
       </div>
 

@@ -39,7 +39,7 @@ export default function VerifyFlow({ mountains, preselectSlug }: { mountains: Mo
     <div>
       <div className="flex items-center justify-between mb-3">
         <h1 className="text-2xl font-bold">정상인증</h1>
-        <Link href="/?view=map" className="text-sm font-semibold inline-flex items-center gap-1 muted">
+        <Link href="/" className="text-sm font-semibold inline-flex items-center gap-1 muted">
           <IconPin size={15} /> 지도에서 찾기
         </Link>
       </div>
