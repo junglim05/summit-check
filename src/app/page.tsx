@@ -29,35 +29,6 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
 
   return (
     <div>
-      {isMap ? (
-      // 지도는 화면 높이에 맞추므로 같은 내용을 한 줄로 줄여 보여준다
-      <section
-        className="card px-4 py-3 mb-4 flex items-center gap-3"
-        style={{ background: "var(--fill)", color: "var(--on-fill)", border: "none" }}
-      >
-        <div className="flex-1 min-w-0">
-          {user ? (
-            <>
-              <p className="font-bold leading-tight mb-1.5">
-                {done.size} / {list.length} 정복
-              </p>
-              <div className="h-1 rounded-full" style={{ background: "color-mix(in srgb, var(--on-fill) 25%, transparent)" }}>
-                <div className="h-1 rounded-full" style={{ width: `${progress}%`, background: "var(--on-fill)" }} />
-              </div>
-            </>
-          ) : (
-            <p className="font-bold leading-tight text-sm">정상에서만 인증되는 정상석 컬렉션</p>
-          )}
-        </div>
-        <Link
-          href="/verify"
-          className="btn shrink-0"
-          style={{ background: "var(--on-fill)", color: "var(--fill)", padding: "8px 12px", fontSize: 14, gap: 6 }}
-        >
-          <IconCamera size={16} /> 정상인증
-        </Link>
-      </section>
-      ) : (
       <section
         className="card p-5 mb-5 relative overflow-hidden"
         style={{ background: "var(--fill)", color: "var(--on-fill)", border: "none" }}
@@ -86,7 +57,6 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           <IconCamera size={18} /> 지금 정상인증하기
         </Link>
       </section>
-      )}
 
       <div className="flex items-center gap-2 mb-3">
         <ViewTab href="/" active={isMap} label="지도" icon />
