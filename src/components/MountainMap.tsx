@@ -335,7 +335,7 @@ export default function MountainMap({
         <div
           ref={boxRef}
           className="w-full rounded-2xl overflow-hidden border border-[color:var(--line)]"
-          style={{ height: "calc(100dvh - 14rem)", minHeight: 400, background: "var(--subtle)" }}
+          style={{ height: "calc(100dvh - 18rem)", minHeight: 400, background: "var(--subtle)" }}
         />
 
         {(!ready || err) && (
