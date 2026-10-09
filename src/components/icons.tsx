@@ -114,3 +114,14 @@ export function IconAlert(p: IconProps) {
     </svg>
   );
 }
+
+/** 운해 — 봉우리 아래로 깔린 구름 물결 */
+export function IconCloud(p: IconProps) {
+  return (
+    <svg {...base(p)}>
+      <path d="M5 13 L10 5.5 L13 10 L15 7.5 L19 13" />
+      <path d="M2.5 16c1.5-1.2 3-1.2 4.5 0s3 1.2 4.5 0 3-1.2 4.5 0 3 1.2 4.5 0" />
+      <path d="M4.5 19.5c1.3-1 2.7-1 4 0s2.7 1 4 0 2.7-1 4 0 2.7 1 3 .5" />
+    </svg>
+  );
+}

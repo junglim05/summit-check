@@ -4,7 +4,7 @@ import { getAuthUser } from "@/lib/supabase/auth";
 import { getMountains, groupByRegion } from "@/lib/mountains";
 import type { Mountain } from "@/lib/types";
 import StoneIcon from "@/components/StoneIcon";
-import { IconCamera, IconCheck, IconPin, Logo } from "@/components/icons";
+import { IconCamera, IconCheck, IconCloud, IconPin, Logo } from "@/components/icons";
 import MountainMap from "@/components/MountainMap";
 
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
@@ -57,6 +57,15 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
           <IconCamera size={18} /> 지금 정상인증하기
         </Link>
       </section>
+
+      <Link href="/cloud-sea" className="card p-4 mb-5 flex items-center gap-3 hover:bg-black/[.02]">
+        <IconCloud size={26} />
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold">운해 예보</p>
+          <p className="text-xs muted truncate">북한산 · 금강산(속초) · 설악산 · 지리산 일출 운해 지수</p>
+        </div>
+        <span className="text-xs muted">보기</span>
+      </Link>
 
       <div className="flex items-center gap-2 mb-3">
         <ViewTab href="/" active={isMap} label="지도" icon />

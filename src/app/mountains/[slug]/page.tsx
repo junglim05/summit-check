@@ -6,6 +6,8 @@ import type { Summit } from "@/lib/types";
 import StoneIcon from "@/components/StoneIcon";
 import { IconCamera } from "@/components/icons";
 import SummitPhoto from "@/components/SummitPhoto";
+import CloudSeaCard from "@/components/CloudSeaCard";
+import { getCloudSeaForecastFor } from "@/lib/cloudSea";
 
 export default async function MountainPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -14,7 +16,8 @@ export default async function MountainPage({ params }: { params: Promise<{ slug:
 
   // 최근 사진과 인증자 수는 실시간 데이터라 병렬로 함께 조회한다.
   const supabase = await createClient();
-  const [{ data: recent }, { count }] = await Promise.all([
+  // 운해 예보는 지원하는 산만 조회하고, 실패해도 상세 화면은 그대로 보여준다.
+  const [{ data: recent }, { count }, cloudSea] = await Promise.all([
     supabase
       .from("summits")
       .select("id, photo_path, created_at, method, profiles(nickname)")
@@ -22,6 +25,7 @@ export default async function MountainPage({ params }: { params: Promise<{ slug:
       .order("created_at", { ascending: false })
       .limit(12),
     supabase.from("summits").select("*", { count: "exact", head: true }).eq("mountain_id", mountain.id),
+    getCloudSeaForecastFor(mountain.slug).catch(() => null),
   ]);
 
   return (
@@ -38,6 +42,13 @@ export default async function MountainPage({ params }: { params: Promise<{ slug:
       <Link href={`/verify?m=${mountain.slug}`} className="btn btn-primary w-full mb-6">
         <IconCamera size={18} /> 이 산 정상인증하기
       </Link>
+
+      {cloudSea && (
+        <div className="mb-6">
+          <h2 className="font-bold mb-2">운해 예보</h2>
+          <CloudSeaCard forecast={cloudSea} compact />
+        </div>
+      )}
 
       <h2 className="font-bold mb-2">최근 인증 정상석</h2>
       {recent && recent.length > 0 ? (
